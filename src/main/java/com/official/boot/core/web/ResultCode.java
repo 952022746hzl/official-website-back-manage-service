@@ -168,6 +168,8 @@ public enum ResultCode implements IResultCode, Serializable {
     USER_SPEAKER_EXCEPTION("A1004", "用户扬声器异常"),
     USER_GPS_POSITIONING_EXCEPTION("A1005", "用户 GPS 定位异常"),
 
+    RESOURCE_NOT_FOUND("A1006","资源不存在"),
+
     /** 一级宏观错误码  */
     SYSTEM_ERROR("B0001", "系统执行出错"),
 

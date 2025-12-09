@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.official.boot.website.mapper.OfficialWebsiteNavMapper">
+
+    <!-- 获取官网动态导航分页列表 -->
+    <select id="getOfficialWebsiteNavPage" resultType="com.official.boot.website.model.vo.OfficialWebsiteNavVO">
+        SELECT
+                id,
+                parent_id,
+                type,
+                link_to,
+                title,
+                remark,
+                create_by,
+                create_time,
+                update_by,
+                update_time,
+                is_deleted
+        FROM
+            official_website_nav
+        <where>
+        </where>
+    </select>
+
+</mapper>
