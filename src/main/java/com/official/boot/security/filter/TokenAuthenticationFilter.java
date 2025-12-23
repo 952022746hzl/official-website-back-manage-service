@@ -50,7 +50,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 String rawToken = authorizationHeader.substring(SecurityConstants.BEARER_TOKEN_PREFIX.length());
 
                 // 执行令牌有效性检查（包含密码学验签和过期时间验证）
-                boolean isValidToken = tokenManager.validateToken(rawToken);
+                boolean isValidToken = tokenManager.validateAccessToken(rawToken);
                 if (!isValidToken) {
                     WebResponseHelper.writeError(response, ResultCode.ACCESS_TOKEN_INVALID);
                     return;

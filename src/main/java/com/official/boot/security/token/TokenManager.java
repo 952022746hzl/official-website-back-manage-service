@@ -36,7 +36,7 @@ public interface TokenManager {
      * @param token JWT Token
      * @return 是否有效
      */
-    boolean validateToken(String token);
+    boolean validateAccessToken(String token);
 
     /**
      * 校验 刷新 Token 是否有效

@@ -112,7 +112,7 @@ public class RedisTokenManager implements TokenManager {
      * @return 是否有效
      */
     @Override
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         return redisTemplate.hasKey(formatTokenKey(token));
     }
 

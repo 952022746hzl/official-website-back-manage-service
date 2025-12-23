@@ -109,8 +109,20 @@ public class JwtTokenManager implements TokenManager {
      * @return 是否有效
      */
     @Override
-    public boolean validateToken(String token) {
-        return validateToken(token, false);
+    public boolean validateAccessToken(String token) {
+        return validateToken(token, false) && isAccessToken(token);
+    }
+
+    private boolean isAccessToken(String token) {
+        try {
+            JWT jwt = JWTUtil.parseToken(token);
+            JSONObject payloads = jwt.getPayloads();
+            return !payloads.getBool(JwtClaimConstants.TOKEN_TYPE);
+        } catch (Exception gitignore) {
+            // token 验证
+        }
+        return false;
+
     }
 
     /**
