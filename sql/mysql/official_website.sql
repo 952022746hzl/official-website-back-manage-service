@@ -71,6 +71,31 @@ CREATE TABLE `gen_field_config`  (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for official_website_nav
+-- ----------------------------
+DROP TABLE IF EXISTS `official_website_nav`;
+CREATE TABLE `official_website_nav`  (
+                                         `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                         `parent_id` bigint NULL DEFAULT 0 COMMENT '父菜单ID',
+                                         `type` tinyint NULL DEFAULT NULL COMMENT '菜单类型（1-外链 2-路由）',
+                                         `link_to` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '跳转地址',
+                                         `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '标题',
+                                         `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
+                                         `sort` int NULL DEFAULT 0 COMMENT '显示顺序',
+                                         `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+                                         `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+                                         `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+                                         `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+                                         `is_deleted` tinyint NULL DEFAULT 0 COMMENT '逻辑删除标识(0-未删除 1-已删除)',
+                                         PRIMARY KEY (`id`) USING BTREE,
+                                         INDEX `idx_parent_id`(`parent_id` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '官网动态导航表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of official_website_nav
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_config
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_config`;
