@@ -44,6 +44,10 @@ public class OfficialWebsiteNav extends BaseEntity {
      */
     private Integer sort;
     /**
+     * 显示状态（1-显示 0-隐藏）
+     */
+    private Integer visible;
+    /**
      * 创建人 ID
      */
     private Long createBy;

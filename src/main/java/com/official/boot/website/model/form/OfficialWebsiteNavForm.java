@@ -35,7 +35,7 @@ public class OfficialWebsiteNavForm implements Serializable {
     private Integer type;
 
     @Schema(description = "跳转地址")
-    @Size(max=1024, message="跳转地址长度不能超过1024个字符")
+    @Size(max=512, message="跳转地址长度不能超过512个字符")
     private String linkTo;
 
     @Schema(description = "标题")
@@ -48,4 +48,7 @@ public class OfficialWebsiteNavForm implements Serializable {
     @Schema(description = "备注")
     @Size(max=255, message="备注长度不能超过255个字符")
     private String remark;
+
+    @Schema(description = "显示状态（1-显示 0-隐藏）")
+    private Integer visible;
 }

@@ -19,6 +19,7 @@ import com.official.boot.website.model.form.OfficialWebsiteNavForm;
 import com.official.boot.website.model.query.OfficialWebsiteNavQuery;
 import com.official.boot.website.model.vo.OfficialWebsiteNavVO;
 import com.official.boot.website.converter.OfficialWebsiteNavConverter;
+import com.official.boot.website.util.NavLinkNormalizer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,7 +61,9 @@ public class OfficialWebsiteNavServiceImpl extends ServiceImpl<OfficialWebsiteNa
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean saveOfficialWebsiteNav(OfficialWebsiteNavForm formData) {
+        validateForm(formData);
         OfficialWebsiteNav entity = officialWebsiteNavConverter.toEntity(formData);
+        entity.setLinkTo(NavLinkNormalizer.normalize(entity.getType(), entity.getLinkTo()));
         return this.save(entity);
     }
 
@@ -73,12 +76,14 @@ public class OfficialWebsiteNavServiceImpl extends ServiceImpl<OfficialWebsiteNa
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateOfficialWebsiteNav(Long id,OfficialWebsiteNavForm formData) {
+    public boolean updateOfficialWebsiteNav(Long id, OfficialWebsiteNavForm formData) {
         OfficialWebsiteNav dbEntity = this.getById(id);
         if (Objects.isNull(dbEntity)) {
             throw new BusinessException(ResultCode.RESOURCE_NOT_FOUND);
         }
-        officialWebsiteNavConverter.updateEntityFromSaveDto(formData,dbEntity);
+        validateForm(formData);
+        officialWebsiteNavConverter.updateEntityFromSaveDto(formData, dbEntity);
+        dbEntity.setLinkTo(NavLinkNormalizer.normalize(dbEntity.getType(), dbEntity.getLinkTo()));
         return this.updateById(dbEntity);
     }
 
@@ -141,11 +146,12 @@ public class OfficialWebsiteNavServiceImpl extends ServiceImpl<OfficialWebsiteNa
 
     @Override
     public List<OfficialWebsitePublicNavVO> getPublicNavs() {
-        // 查询所有未删除的导航，按排序字段升序
+        // 查询所有未删除且可见的导航，按排序字段升序
         List<OfficialWebsiteNav> navList = this.list(new LambdaQueryWrapper<OfficialWebsiteNav>()
+                .eq(OfficialWebsiteNav::getVisible, 1)
                 .orderByAsc(OfficialWebsiteNav::getSort)
         );
-        
+
         // 构建并返回导航树，从根节点开始
         return buildPublicNavTree(SystemConstants.ROOT_NODE_ID, navList);
     }
@@ -200,6 +206,24 @@ public class OfficialWebsiteNavServiceImpl extends ServiceImpl<OfficialWebsiteNa
                 }).toList();
     }
 
+    /**
+     * 按导航类型校验表单：分组目录(3)无需链接；外链(1)必须 http(s)；其余必须非空。
+     */
+    private void validateForm(OfficialWebsiteNavForm formData) {
+        Integer type = formData.getType();
+        String linkTo = formData.getLinkTo() == null ? "" : formData.getLinkTo().trim();
+        if (type != null && type == 3) {
+            return;
+        }
+        if (linkTo.isEmpty()) {
+            throw new BusinessException("跳转地址不能为空");
+        }
+        if (type != null && type == 1
+                && !(linkTo.startsWith("http://") || linkTo.startsWith("https://"))) {
+            throw new BusinessException("外链必须以 http:// 或 https:// 开头");
+        }
+    }
+
     private List<OfficialWebsitePublicNavVO> buildPublicNavTree(Long parentId, List<OfficialWebsiteNav> navList) {
         return CollectionUtil.emptyIfNull(navList)
                 .stream()
@@ -214,7 +238,7 @@ public class OfficialWebsiteNavServiceImpl extends ServiceImpl<OfficialWebsiteNa
                 .map(entity -> {
                     OfficialWebsitePublicNavVO publicNavVO = new OfficialWebsitePublicNavVO();
                     publicNavVO.setLabel(entity.getTitle());
-                    publicNavVO.setTo(entity.getLinkTo());
+                    publicNavVO.setTo(NavLinkNormalizer.normalize(entity.getType(), entity.getLinkTo()));
                     
                     // 根据类型设置target属性：1-外链(_blank)，2-路由(null或_self)
                     if (entity.getType() != null && entity.getType() == 1) {

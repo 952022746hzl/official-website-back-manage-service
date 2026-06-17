@@ -39,6 +39,9 @@ public class OfficialWebsiteNavVO implements Serializable {
     @Schema(description = "显示顺序")
     private Integer sort;
 
+    @Schema(description = "显示状态（1-显示 0-隐藏）")
+    private Integer visible;
+
     @Schema(description = "创建人 ID")
     private Long createBy;
     @Schema(description = "创建时间")
